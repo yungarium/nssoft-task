@@ -1,0 +1,271 @@
+diff --git a/src/components/DashboardWorks/index.js b/src/components/DashboardWorks/index.js
+new file mode 100644
+index 0000000..f5ffe7c
+--- /dev/null
++++ b/src/components/DashboardWorks/index.js
+@@ -0,0 +1,68 @@
++import React from "react";
++import { withRouter } from "react-router";
++
++import styles from "./styles.module.css";
++
++class DashboardWorks extends React.Component {
++    constructor(props) {
++        super(props);
++        this.state = {
++            currentId: null
++        };
++    }
++
++    render() {
++        return (
++            <div className={styles['dashboard']}>
++                <div>
++                    <h3 className={styles['header']}>Artworks</h3>
++                    {this.renderArtworksList()}
++                </div>
++                {this.renderSpotLight()}
++            </div>
++        );
++    }
++
++    renderArtworksList() {
++        return this.props.artworks.map(artwork => (
++            <div
++                key={artwork._id}
++                className={styles[this.state.currentId === artwork._id ? 'active-artwork-row' : 'artwork-row']}
++                onClick={() => this.setState({ currentId: artwork._id })}
++            >
++                <div
++                    className={styles['artwork-avatar']}
++                    style={{
++                        backgroundImage: `url(/imgs/artworks/${artwork._id}.jpg)`
++                    }}
++                />
++                <span>{artwork.title}</span>
++            </div>
++        ));
++    }
++
++    renderSpotLight() {
++        const props = this.props;
++        const selectedArtworkId = this.state.currentId;
++        if (!selectedArtworkId) {
++            return null;
++        }
++        const artworkInSpotlight = props.artworks.find(
++            artworks => artworks._id === selectedArtworkId
++        );
++        const imgUrl = `imgs/artworks/${artworkInSpotlight._id}.jpg`;
++        return (
++            <div className={styles['spotlight']}>
++                <div
++                    className={styles['spotlight-img']}
++                    style={{
++                        backgroundImage: `url(${imgUrl})`
++                    }}
++                />
++                <div className={styles['spotlight-label']}>{artworkInSpotlight.title}</div>
++            </div>
++        );
++    }
++}
++
++export default withRouter(DashboardWorks);
+diff --git a/src/components/DashboardWorks/styles.module.css b/src/components/DashboardWorks/styles.module.css
+new file mode 100644
+index 0000000..a83e866
+--- /dev/null
++++ b/src/components/DashboardWorks/styles.module.css
+@@ -0,0 +1,75 @@
++.dashboard {
++    display: flex;
++}
++
++.dashboard>* {
++    flex: 1;
++}
++
++.header {
++    font-weight: normal;
++    font-size: 17px;
++    margin-left: 1.1rem;
++    color: #8d8d8d;
++}
++
++.artwork-row {
++    width: 100%;
++    display: flex;
++    align-items: center;
++    border-bottom: 1px solid #e3e9e8;
++    padding: 0.3rem 0.5rem;
++    height: 4rem;
++    font-size: 1.1rem;
++    background-color: white;
++    text-Decoration: none;
++    color: black;
++    cursor: pointer;
++}
++
++.active-artwork-row {
++    width: 100%;
++    display: flex;
++    align-items: center;
++    border-bottom: 1px solid #e3e9e8;
++    padding: 0.3rem 0.5rem;
++    height: 4rem;
++    font-size: 1.1rem;
++    text-Decoration: none;
++    color: black;
++    background-color: #f6fafb;
++    background-image: linear-gradient(108deg, rgb(235, 244, 244) 50%, rgb(251, 253, 253) 45%, rgb(255, 255, 255) 85%, rgb(255, 255, 255) 100%);
++    cursor: default;
++}
++
++.artwork-avatar {
++    height: 3rem;
++    width: 3rem;
++    margin: 0 0.6rem;
++    border-radius: 50%;
++    background-size: cover;
++}
++
++.spotlight {
++    padding-top: 105px;
++    box-sizing: border-box;
++    height: 400px;
++    width: 460px;
++    margin-left: auto;
++    background-image: "linear-gradient(288deg, rgb(235, 244, 244) 50%, rgb(251, 253, 253) 45%, rgb(255, 255, 255) 85%, rgb(255, 255, 255) 100%)";
++}
++
++.spotlight-img {
++    height: 9rem;
++    width: 9rem;
++    margin: auto;
++    border-radius: 50%;
++    background-size: cover;
++}
++
++.spotlight-label {
++    font-weight: bold;
++    text-align: center;
++    margin: 20px 0;
++    font-size: 25px;
++}
+\ No newline at end of file
+diff --git a/src/components/Pages/Artworks/index.js b/src/components/Pages/Artworks/index.js
+index 611217b..d9c5a2b 100644
+--- a/src/components/Pages/Artworks/index.js
++++ b/src/components/Pages/Artworks/index.js
+@@ -1,6 +1,10 @@
+ import React from "react";
+ 
+ import NavBar from "../../NavBar";
++<<<<<<< HEAD
++import DashboardWorks from '../../DashboardWorks';
++=======
++>>>>>>> 851db686a8ea445109e44eecc5bc95a093270c0d
+ 
+ // consider this data arrived from the API
+ // <donotmodify>
+@@ -15,5 +19,9 @@ const artworks = [
+ export default props => (
+   <div>
+     <NavBar />
++<<<<<<< HEAD
++    <DashboardWorks artworks={artworks} />
++=======
++>>>>>>> 851db686a8ea445109e44eecc5bc95a093270c0d
+   </div>
+ );
+diff --git a/src/localStorage.js b/src/localStorage.js
+new file mode 100644
+index 0000000..87799cf
+--- /dev/null
++++ b/src/localStorage.js
+@@ -0,0 +1,26 @@
++export const loadState = () => {
++    try {
++        const serializedState = localStorage.getItem('state');
++
++        if (serializedState === null) {
++            return undefined;
++        }
++
++        return JSON.parse(serializedState);
++
++    } catch (err) {
++        console.log(err);
++        return undefined;
++    }
++}
++
++export const saveState = (state) => {
++
++    try {
++        const serializedState = JSON.stringify(state);
++        localStorage.setItem('state', serializedState);
++    } catch (err) {
++        console.log(err);
++    }
++
++}
+\ No newline at end of file
+diff --git a/src/redux/reducers/notes.js b/src/redux/reducers/notes.js
+index 5ad0640..9cb6da9 100644
+--- a/src/redux/reducers/notes.js
++++ b/src/redux/reducers/notes.js
+@@ -2,6 +2,15 @@ import { ADD_NOTE } from "../actions/notes";
+ 
+ const initState = ["note 1", "note 2", "note 3", "note 4"];
+ 
++<<<<<<< HEAD
++export default function (state = initState, action) {
++  switch (action.type) {
++    case ADD_NOTE:
++      return [
++        ...state.slice(0, +action.afterIndex + 1),
++        action.text,
++        ...state.slice(+action.afterIndex + 1)
++=======
+ export default function(state = initState, action) {
+   switch (action.type) {
+     case ADD_NOTE:
+@@ -9,6 +18,7 @@ export default function(state = initState, action) {
+         ...state.slice(0, action.afterIndex + 1),
+         action.text,
+         ...state.slice(action.afterIndex + 1)
++>>>>>>> 851db686a8ea445109e44eecc5bc95a093270c0d
+       ];
+     default:
+       return state;
+diff --git a/src/redux/store/configureStore.js b/src/redux/store/configureStore.js
+index 5d8fd99..80cfcba 100644
+--- a/src/redux/store/configureStore.js
++++ b/src/redux/store/configureStore.js
+@@ -1,9 +1,20 @@
+ import { createStore } from 'redux';
+ import rootReducer from '../reducers/';
+ 
+-export default function() {
+-  return createStore(
++import { loadState, saveState } from '../../localStorage'
++
++const persistedState = loadState();
++
++export default function () {
++  const store = createStore(
+     rootReducer,
++    persistedState,
+     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+   );
+-}
+\ No newline at end of file
++
++  store.subscribe(() => {
++    saveState(store.getState());
++  })
++
++  return store;
++}
